@@ -1,0 +1,1 @@
+blob_segement_for_comments.csv  based on textblob; col1 = index,col1 = segement score(+ positive,-negative)
