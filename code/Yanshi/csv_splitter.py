@@ -16,6 +16,10 @@ def splitter(input_filename, output_template, max_rows):
 
     print("Expected Number of Output Files: " + str(len(data)//max_rows+1))
 
+    """
+    The following codes are modified from StackOverflow #25290757 by @cheevahagadog 
+    """
+
     while len(data) > max_rows:
         top = data[:max_rows]
         data_frames.append(top)
@@ -30,11 +34,11 @@ def splitter(input_filename, output_template, max_rows):
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='Process Input/Output File')
+    parser = argparse.ArgumentParser(description='Split the Input File with Pandas.DataFrame')
     parser.add_argument('review_filename',
-                        help='The csv file you\'d like to spli.')
+                        help='The csv file you\'d like to split.')
     parser.add_argument('output_template',
-                        help='The prefix of the output csv you\'d like to stored as.')
+                        help='The prefix (including directory) of the output csv you\'d like to stored as.')
     parser.add_argument('-r', "--rows",
                         help='maximum rows of a splitted csv file.',
                         type=int,
@@ -42,3 +46,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     splitter(args.review_filename, args.output_template, args.rows)
+

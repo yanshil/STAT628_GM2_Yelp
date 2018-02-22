@@ -37,7 +37,7 @@ def process(yelp_filename, output_filename, tiny):
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='Process Input/Output File')
+    parser = argparse.ArgumentParser(description='Run Sentiment Analysis on Yelp Data.')
     parser.add_argument('review_filename',
                         help='The filename of the yelp review you\'d like to analyze.')
     parser.add_argument('output_filename',
