@@ -136,6 +136,8 @@ textTF_feature_names = tf_vectorizer.get_feature_names()
 
 ###########################################  Cross-validation ###############################
 train, test = train_test_split(restaurantsDF, test_size=0.2)
+train_textTFIDF = textTFIDF[train.index,]
+test_textTFIDF = textTFIDF[test.index,]
 #############################################################################################
 
 
@@ -143,5 +145,5 @@ train, test = train_test_split(restaurantsDF, test_size=0.2)
 #IF using CV to determine the MSE, sparse matrix can be access by sparsematrix[rowlist,:]
 #using  train_test_split() split training adn test set
 # also doing subset would keep the index, so you need resign index for subset
-# I already include resign step in the above code
+# I already include all the step in the above code
 
