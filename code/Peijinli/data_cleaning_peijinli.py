@@ -1,131 +1,144 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb 13 20:49:27 2018
+Created on Sun Feb 25 10:41:28 2018
 
 @author: Peiji
 """
-import sys
-import pandas as pd
-import numpy as np
-import os
-import csv
+
+import time
+import datetime
+
+import _pickle as pickle
+import matplotlib.pyplot as plt
 import nltk
-import csv
-import json
+import numpy as np
+import pandas as pd
+import pylab
+import re
+import scipy as sp
+import seaborn
 import gensim
-from scipy import sparse
-from nltk.tokenize import sent_tokenize, word_tokenize
+import sklearn
+
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
+
+from gensim import corpora, models
 from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
-from nltk.stem.wordnet import WordNetLemmatizer
-from nltk.stem.porter import PorterStemmer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from gensim import models
-from gensim.models import Word2Vec, KeyedVectors
+from sklearn import metrics
+from sklearn.metrics import classification_report
+from sklearn.naive_bayes import MultinomialNB
 
-stem = PorterStemmer()
-lem = WordNetLemmatizer()
-stopWords = set(stopwords.words('english'))
+from sklearn.feature_extraction.text import TfidfVectorizer,CountVectorizer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
+from sklearn.decomposition import NMF, LatentDirichletAllocation
+#from sklearn.lda import LDA
+#from sklearn.qda import QDA
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import roc_curve, auc
 
-#separate comment and category
-def modtrain_data():
-    file = 'train_data.csv'
-    df = pd.read_csv(file,sep=",", error_bad_lines=False, keep_default_na=False, na_values=[""],engine='python')
-    df.columns
-    ser1 = df['text']
-    ser2 = df['categories']
-    #df_comment = pd.concat([ser1])
-    #df_cate = pd.concat([ser2])
-    ser1.to_csv('comment.csv')
-    ser2.to_csv('category.csv')
-    print('traindata has been modified')
+from nltk.stem import PorterStemmer
+from nltk.tokenize import sent_tokenize, word_tokenize
 
 
-#for each comment, filter stop words, transfer to lowercase
-def filterStopword(comment):
-    words = word_tokenize(comment)
-    wordsFiltered = []
-    for w in words:
-        if w not in stopWords:
-            wordsFiltered.append(w.lower())
-    Stopnum = len(words) - len(wordsFiltered)
-    freqDict = dict(nltk.FreqDist(wordsFiltered))
-    return [Stopnum,freqDict]
-    
+###########function to extract word stem ####################################################
+ps = PorterStemmer()
+
+########################################set up stopwords####################################
+
+stoplist ={'ll', 'are', 'theirs', 'up', 'do', 'have', 'who', 'few', 'needn', 'yourselves', 'has', 
+           'under', 'ain', 'the', 'should', 'y', 'might', "must", 'was', 'had', 'she', 'is', 'through',
+           'himself', 'their', 'ours', 'm', 'and', 'am', 'against', 'his', 'from', 'mustn', 'off',  'her',
+           "will", 'myself', 'as', "did", "is", 'themselves', 'o', 'of', 'them', 'does', 'i', 'a', 'by', 
+           't', 'had', 'it', 'after', "should've", 'was', 'did', 'my', 'into', 'they', 'such', 'but', 'if', 
+           'hers', 'with', 'your', 'than', "had", 'did', "could", "she's",
+           "might", 'has', 'each', 'these', 'our', 'will', 'those', 'can', 'he', 'over', 'could', 
+           'having', 'below', 'between', 'own', 'until', 'about', 'all', 'being', 'why', 'should', 
+           'most', 're', 'we', 'doing', 'at', 'because', 's', 'does', 'now', 'other', 'down', 
+           'ourselves', 'so', 'you', 'were', 'while', 'to', 'here', 'me', "you've", 'its', 'herself', 
+           'further', 'too', 'isn', "you're", 'were', "was", 'some', 'in', 'been', "it's", 'or', 
+           'are', 'nor', "have", 'same', 'before', 'won', 'when', 'more', 'this', 'on', 'only', 'd', "does",
+           'both', 'once', 'haven', 'during', "don't", 'very', 'yourself', 'be', 'yours', 'where', 'him', 'what', 
+           "you'll", "would", 'that', 'how', 'ma', 'then', "need", "should", 'there', "that'll", 've',
+           'an', 'out', 'again', 'itself', 'which', 'wouldn', 'any', 'whom', 'above', "you'd", 'just', 'for', 
+           "has", "were"}
+
+########################################extract abbreviation##################################
+def decontracted(phrase):
+    # specific
+    phrase = re.sub(r"won't", "will not", phrase)
+    phrase = re.sub(r"can\'t", "can not", phrase)
+    phrase = re.sub(r"shan't", "refuse to", phrase)
+    phrase = re.sub(r"shan", "happy to", phrase)
+    phrase = re.sub(r":\(", "bad", phrase)
+    phrase = re.sub(r":\)", "good", phrase)
+    # general
+    phrase = re.sub(r"n\'t", " not", phrase)
+    phrase = re.sub(r"\'re", " are", phrase)
+    phrase = re.sub(r"\'s", " is", phrase)
+    phrase = re.sub(r"\'d", " would", phrase)
+    phrase = re.sub(r"\'ll", " will", phrase)
+    phrase = re.sub(r"\'t", " not", phrase)
+    phrase = re.sub(r"\'ve", " have", phrase)
+    phrase = re.sub(r"\'m", " am", phrase)
+    return phrase
+
+################################################## throw too large or too short comment####
+def subset_givenlength(data,minReviewLen,maxReviewLen,subsize):
+    t= data.sample(n=subsize, frac=None, replace=False, weights=None, random_state=None, axis=0)
+    print("Number of rows selected:",len(t[t.text.str.len() > minReviewLen][t.text.str.len() < maxReviewLen]))
+    subset = t[t.text.str.len() > minReviewLen][t.text.str.len() < maxReviewLen]
+    return subset
 
 
-#for comments list return [[stop#,WordsMatrix]... ...]
-#WordsMatrix is dictionary With key = words and value = frequency
-def wordDataset(comments):
-    Stopnum_Dataset = []
-    WordsMatrix = []
-    num = 0
-    for i in comments:
-        num += 1
-        print(num)
-        Stopnum_Dataset.append(filterStopword(i)[0]) 
-        WordsMatrix.append(filterStopword(i)[1])
-    return [Stopnum_Dataset,WordsMatrix] 
-        
+################################################### clean whole comments list###############
+def process_reviews(dirty_data_set):
+    clean_data_set = []
+    for review in dirty_data_set:
+        review = decontracted(review)
+        # Remove punctuations        
+        review = re.sub(r'[^a-zA-Z]', ' ', review)
+        # To lowercase
+        review = review.lower()
+        # Remove stop words
+        texts = [ps.stem(word) for word in review.lower().split() if word not in stoplist]
+        try:
+            clean_data_set.append(' '.join(texts))
+        except:
+            pass
+    return clean_data_set
 
 
+##########################################  read data  ##################################################
+#path = 'C:\\Users\\Peiji\\Desktop\\spring2018\\STAT628\\hw2'
+#os.chdir(path)
+from sklearn.cross_validation import train_test_split
 
-#modtrain_data()
-path = 'C:\\Users\\Peiji\\Desktop\\spring2018\\STAT628\\hw2\\data_cleaning'
-os.chdir(path)
-os.listdir(path)
-#comments = pd.Series.from_csv('comment.csv',sep=",")
-#Dataset = wordDataset(comments)
-#Stopnum = pd.Series(Dataset[0])
-#Stopnum.to_csv('StopNum.csv')
-#A=Dataset[1]
-#with open("file_temp.json", "w") as f:
-#    json.dump(A, f)
-#read .json file
-
-with open("file_temp.json", "r") as f:
-    comments_dict = json.load(f)
-
-#t:sentences = comments_dict[1:5]
-N = len(comments_dict)
+###read data,split in train test
+file = 'train_data.csv'
+data = pd.read_csv(file,sep=",", error_bad_lines=False, keep_default_na=False, na_values=[""],engine='python')
+restaurantsDF = subset_givenlength(data,0,10000,15000)
+restaurantsDF.text= process_reviews(restaurantsDF.text)
+train, test = train_test_split(restaurantsDF, test_size=0.2)
+#############################################################################################
 
 
-wordsIDF = {}### for each words {key = word : value = occur times}
-wordsdict = []### immutable words
-for i in comments_dict:
-    for j in i.keys():
-        wordsdict.append(j)
-        
-wordsbag_key = set(wordsdict)
+###########################################   TF-IDF   ######################################
+##set selected feature
+no_features = 1000
 
-num = 0
-for i in wordsbag_key:
-    num += 1
-    print(num)
-    value = 0
-    for j in comments_dict:
-        if i in j.keys():
-            value += 1
-    wordsIDF[i] = value/N
+## tf-idf!!!
+tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words='english')
+tfidf = tfidf_vectorizer.fit_transform(train)
+tfidf_feature_names = tfidf_vectorizer.get_feature_names()
 
-with open("words_IDF.json", "w") as f:
-    json.dump(wordsIDF, f)
-    
-    
-#wordTF = {}
-#num = 0
-#for i in comments_dict:
-#    print(num)
-#    total = sum(i.values())
-#    frq_dic = i
-#    for j in i.keys():
-#        frq_dic[j] = i[j]/total
-#    wordTF[num] = frq_dic
-#    num += 1
-    
-#import json
-#with open('outputfile.json', 'w') as fout:
-#    json.dump(wordTF, fout)
-    
-with open("outputfile.json", "r") as f:
-    out = json.load(f)
+
+###word-count
+
+tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words=stoplist)
+tf = tf_vectorizer.fit_transform(data)
+tf_feature_names = tf_vectorizer.get_feature_names()
