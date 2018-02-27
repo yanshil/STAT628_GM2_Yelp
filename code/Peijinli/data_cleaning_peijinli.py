@@ -129,7 +129,7 @@ train, test = train_test_split(restaurantsDF, test_size=0.2)
 
 ###########################################   TF-IDF   ######################################
 ##set selected feature
-no_features = 1000
+no_features = 100000
 
 ## tf-idf!!!
 tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words='english')
