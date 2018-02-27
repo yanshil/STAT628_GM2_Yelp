@@ -142,8 +142,6 @@ train, test = train_test_split(restaurantsDF, test_size=0.2)
 #Ithink you should build the TF-IDF for the whole dataset
 #IF using CV to determine the MSE, sparse matrix can be access by sparsematrix[rowlist,:]
 #using  train_test_split() split training adn test set
-#the index is the rownumber of the original dataset can be accessed by
-# restaurantsDF.loc[list_of_row_index,<list_of_col_index>]
 # also doing subset would keep the index, so you need resign index for subset
 # I already include resign step in the above code
 
