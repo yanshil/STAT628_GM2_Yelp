@@ -122,29 +122,23 @@ from sklearn.cross_validation import train_test_split
 file = 'train_data.csv'
 data = pd.read_csv(file,sep=",", error_bad_lines=False, keep_default_na=False, na_values=[""],engine='python')
 restaurantsDF = subset_givenlength(data,0,10000,15000)
+restaurantsDF.index = range(restaurantsDF.shape[0])
 restaurantsDF.text= process_reviews(restaurantsDF.text)
+
+###########################################   TF-IDF   ######################################
+tfidf_vectorizer = TfidfVectorizer()
+textTFIDF = tfidf_vectorizer.fit_transform(restaurantsDF.text)
+textTFIDF_feature_names = tfidf_vectorizer.get_feature_names()
+
+tf_vectorizer = CountVectorizer()
+textTF = tf_vectorizer.fit_transform(restaurantsDF.text)
+textTF_feature_names = tf_vectorizer.get_feature_names()
+
+###########################################  Cross-validation ###############################
 train, test = train_test_split(restaurantsDF, test_size=0.2)
 #############################################################################################
 
 
-###########################################   TF-IDF   ######################################
-##set selected feature
-no_features = 100000
-#total is 158431,which means 158431 unique word
-
-## tf-idf!!!
-tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words='english')
-tfidf = tfidf_vectorizer.fit_transform(train)
-tfidf_feature_names = tfidf_vectorizer.get_feature_names()
-
-
-###word-count
-
-tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words=stoplist)
-tf = tf_vectorizer.fit_transform(data)
-tf_feature_names = tf_vectorizer.get_feature_names()
-
-######################################## warning!!!!!! ######################################
 #Ithink you should build the TF-IDF for the whole dataset
 #IF using CV to determine the MSE, sparse matrix can be access by sparsematrix[rowlist,:]
 #using  train_test_split() split training adn test set
