@@ -143,3 +143,11 @@ tfidf_feature_names = tfidf_vectorizer.get_feature_names()
 tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=no_features, stop_words=stoplist)
 tf = tf_vectorizer.fit_transform(data)
 tf_feature_names = tf_vectorizer.get_feature_names()
+
+######################################## warning!!!!!! ######################################
+#Ithink you should build the TF-IDF for the whole dataset
+#IF using CV to determine the MSE, sparse matrix can be access by sparsematrix[rowlist,:]
+#using  train_test_split() split training adn test set
+#the index is the rownumber of the original dataset can be accessed by
+# restaurantsDF.loc[list_of_row_index,<list_of_col_index]
+
