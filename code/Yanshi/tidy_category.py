@@ -27,7 +27,7 @@ def tidy_category(review_filename, output, tiny, sp):
         yelp_categories = yelp['categories']
 
     # Remove "[", "]", "'" and split with comma
-    yelp_categories_tidy = [re.sub("\'", '', x.strip("[]")).split(',') for x in yelp_categories]
+    yelp_categories_tidy = [re.sub("\'", '', x.strip("[]")).split(',') for x in data.categories]
 
     categories_counter = Counter()
     for x in yelp_categories_tidy:
