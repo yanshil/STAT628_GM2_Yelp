@@ -112,7 +112,19 @@ def process_reviews(dirty_data_set):
             pass
     return clean_data_set
 
+################################################### category clean######################
 
+def getsp_category(catlist):
+    yelp_categories_tidy = [re.sub("\'", '', x.strip("[]")).split(',') for x in data.categories]
+    categories_counter = Counter()
+    for x in yelp_categories_tidy:
+        categories_counter.update(x)
+    categories_dict = dict(categories_counter)
+    from sklearn.feature_extraction import DictVectorizer
+    v = DictVectorizer()
+    categories_sp = v.fit_transform(Counter(f) for f in yelp_categories_tidy)
+    return [categories_sp , list(categories_counter.keys())]
+    
 ##########################################  read data  ##################################################
 #path = 'C:\\Users\\Peiji\\Desktop\\spring2018\\STAT628\\hw2'
 #os.chdir(path)
@@ -125,6 +137,9 @@ restaurantsDF = subset_givenlength(data,0,10000,15000)
 restaurantsDF.index = range(restaurantsDF.shape[0])
 restaurantsDF.text= process_reviews(restaurantsDF.text)
 
+########################################## new variable! text length######################
+restaurantsDF.textlen = pd.Series([len(i) for i in restaurantsDF.text])
+
 ###########################################   TF-IDF   ######################################
 tfidf_vectorizer = TfidfVectorizer()
 textTFIDF = tfidf_vectorizer.fit_transform(restaurantsDF.text)
@@ -134,10 +149,20 @@ tf_vectorizer = CountVectorizer()
 textTF = tf_vectorizer.fit_transform(restaurantsDF.text)
 textTF_feature_names = tf_vectorizer.get_feature_names()
 
+
+
+
 ###########################################  Cross-validation ###############################
 train, test = train_test_split(restaurantsDF, test_size=0.2)
 train_textTFIDF = textTFIDF[train.index,]
 test_textTFIDF = textTFIDF[test.index,]
+########################################## categories sparse matrix#######################
+
+category = getsp_category(restaurantsDF.categories)[0]
+train_cat = category[train.index,]
+test_cat = category[test.index,]
+train_len = restaurantsDF.textlen[train.index]
+test_len = restaurantsDF.textlen[test.index]
 #############################################################################################
 
 
