@@ -182,10 +182,11 @@ finalX_test2 = np.hstack((final_test_textTF.toarray(),
 
 from sklearn.ensemble import RandomForestClassifier
 
-clf = RandomForestClassifier(n_estimators=20)
+# clf = RandomForestClassifier(n_estimators=10, n_jobs=4)
+clf = RandomForestClassifier(n_estimators=10)
 clf = clf.fit(finalX_train2, trainDF.stars)
 final_predY = clf.predict(finalX_test2)
-pd.DataFrame(final_predY).to_csv('predict.csv', index=True)
+pd.DataFrame(final_predY).to_csv('predict.csv', index=False)
 
 ##########################
 # Decision Tree

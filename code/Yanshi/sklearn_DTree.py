@@ -191,7 +191,7 @@ finalX_test2 = np.hstack((final_test_textTF.toarray(),
 # Decision Tree
 from sklearn import tree
 clf = tree.DecisionTreeClassifier()
-clf = clf.fit(finalX_train2, trainDF)
+clf = clf.fit(finalX_train2, trainDF.stars)
 final_predY = clf.predict(finalX_test2)
-pd.DataFrame(final_predY).to_csv('predict_DTree.csv', index=True)
+pd.DataFrame(final_predY).to_csv('predict_DTree.csv', index=False)
 
