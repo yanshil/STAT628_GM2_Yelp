@@ -180,18 +180,18 @@ finalX_test2 = np.hstack((final_test_textTF.toarray(),
 # finalpredY = wclf.predict(finalX_test2)
 # ##################print output#########################################################
 
-from sklearn.ensemble import RandomForestClassifier
-
-clf = RandomForestClassifier(n_estimators=20)
-clf = clf.fit(finalX_train2, trainDF.stars)
-final_predY = clf.predict(finalX_test2)
-pd.DataFrame(final_predY).to_csv('predict.csv', index=True)
+# from sklearn.ensemble import RandomForestClassifier
+#
+# clf = RandomForestClassifier(n_estimators=20)
+# clf = clf.fit(finalX_train2, trainDF.stars)
+# final_predY = clf.predict(finalX_test2)
+# pd.DataFrame(final_predY).to_csv('predict.csv', index=True)
 
 ##########################
 # Decision Tree
-# from sklearn import tree
-# clf = tree.DecisionTreeClassifier()
-# clf = clf.fit(finalX_train2, trainDF)
-# final_predY = clf.predict(finalX_test2)
-# pd.DataFrame(final_predY).to_csv('predict.csv', index=True)
+from sklearn import tree
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(finalX_train2, trainDF)
+final_predY = clf.predict(finalX_test2)
+pd.DataFrame(final_predY).to_csv('predict_DTree.csv', index=True)
 
