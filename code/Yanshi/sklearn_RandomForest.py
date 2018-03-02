@@ -186,7 +186,7 @@ from sklearn.ensemble import RandomForestClassifier
 clf = RandomForestClassifier(n_estimators=10)
 clf = clf.fit(finalX_train2, trainDF.stars)
 final_predY = clf.predict(finalX_test2)
-pd.DataFrame(final_predY).to_csv('predict.csv', index=False)
+pd.DataFrame(final_predY).to_csv('predict_RF.csv', index=False)
 
 ##########################
 # Decision Tree
