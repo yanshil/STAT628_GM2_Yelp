@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-"""nltk_SIA.py: Sentiment Intensity Analysis on Yelp Review Text with NLTK."""
+"""sklearn_pack.py: Do Model training with large sparse matrix with sklearn"""
 
-__author__ = "Yanshi Luo"
+__author__ = "Yanshi Luo", "Peijin Li"
 __license__ = "GPL"
 __email__ = "yluo82@wisc.edu"
 
@@ -11,6 +11,10 @@ import re
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, TfidfTransformer
 from nltk.stem import PorterStemmer
 import numpy as np
+
+"""
+Text Processing Rules @ Peijin
+"""
 
 ps = PorterStemmer()
 
@@ -102,6 +106,9 @@ def count_upper_word(text):
     return count
 
 
+"""
+Scripts for features generating and Models
+"""
 #################################################################
 # import os
 # path = 'C:\\Users\\kdrob\\Downloads'
