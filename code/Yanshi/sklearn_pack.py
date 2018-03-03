@@ -1,6 +1,14 @@
+#!/usr/bin/env python3
+
+"""nltk_SIA.py: Sentiment Intensity Analysis on Yelp Review Text with NLTK."""
+
+__author__ = "Yanshi Luo"
+__license__ = "GPL"
+__email__ = "yluo82@wisc.edu"
+
 import pandas as pd
 import re
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, TfidfTransformer
 from nltk.stem import PorterStemmer
 import numpy as np
 
@@ -101,97 +109,131 @@ def count_upper_word(text):
 
 train_filename = 'train_data.csv'
 test_filename = 'testval_data.csv'
-# dt_train = pd.read_csv(train_filename)
-# dt_test = pd.read_csv(test_filename)
+
+isUnitTest = True
+isFullTest = False  # Generate full prediction result with small train sample
 
 trainDF = pd.read_csv(train_filename)
 testDF = pd.read_csv(test_filename)
 
-# dt_train = pd.read_csv(train_filename, sep=",", error_bad_lines=False, keep_default_na=False, na_values=[""],
-#                        engine='python')
-#
-# dt_test = pd.read_csv(test_filename, sep=",", error_bad_lines=False, keep_default_na=False, na_values=[""],
-#                       engine='python')
+if isFullTest:
+    trainDF = trainDF.head(15000)
 
-#trainDF = dt_train
-# trainDF = dt_train.head(100)
+if isUnitTest:
+    trainDF = trainDF.head(500)
+    testDF = testDF.head(10)
+
 n_train = trainDF.shape[0]
-# trainDF = range(trainDF.shape[0])
-#trainDF.text = process_reviews(trainDF.text)
+
 trainDF["text_length"] = pd.Series([len(i) for i in trainDF.text])
 trainDF["num_upper_words"] = pd.Series([count_upper_word(x) for x in trainDF.text])
 trainDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in trainDF.text])
 
-#testDF = dt_test
-# testDF = dt_test.head(2)
 n_test = testDF.shape[0]
-# testDF = range(testDF.shape[0])
-#testDF.text = process_reviews(testDF.text)
+
 testDF["text_length"] = pd.Series([len(i) for i in testDF.text])
 testDF["num_upper_words"] = pd.Series([count_upper_word(x) for x in testDF.text])
 testDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in testDF.text])
 
-
 comment_text = [trainDF.text, testDF.text]
 text = pd.concat(comment_text)
 text = process_reviews(text)
-# text.index = range(text.shape[0])
 
-comment_categories = [trainDF.categories, testDF.categories]
-categories = pd.concat(comment_categories)
-# cate.index = range(cate.shape[0])
+"""
+Get TF-IDF from Text
+"""
 
 num_feature = 1000000
-tf_vectorizer = CountVectorizer(max_features=num_feature)
-final_textTF = tf_vectorizer.fit_transform(text)
 
-################### split the train and test to do the model fitting####################
+train_tfVec = TfidfVectorizer(max_features=num_feature)
+final_train_textTF = train_tfVec.fit_transform(trainDF.text)
+# Get Vocalbulary for generating sparse matrix
+train_features = train_tfVec.get_feature_names()
 
-final_train_textTF = final_textTF[range(0, n_train), ]
-final_test_textTF = final_textTF[range(n_train, n_train + n_test), ]
+test_tfVec = TfidfVectorizer(vocabulary=train_features)
+final_test_textTF = test_tfVec.fit_transform(testDF.text)
+
+print(final_train_textTF.shape)
+print(final_test_textTF.shape)
+
+"""
+Get Sparse Matrix from Categories 
+"""
+comment_categories = [trainDF.categories, testDF.categories]
+categories = pd.concat(comment_categories)
+
+from scipy.sparse import csr_matrix, hstack
 
 final_category = get_category_sp(categories)
-final_train_category = final_category.iloc[0:n_train, ]
-final_test_category = final_category.iloc[n_train: n_train + n_test, ]
-# final_train_category = final_category[range(0, n_train), ]
-# final_test_category = final_category[range(n_train, n_train + n_test), ]
+# a = csr_matrix(final_category.values)
+final_train_category = csr_matrix(final_category.iloc[0:n_train, ].values)
+final_test_category = csr_matrix(final_category.iloc[n_train: n_train + n_test, ].values)
 
-#################### combine other feature ############################################
-finalX_train2 = np.hstack((final_train_textTF.toarray(),
-                           np.array(trainDF['longitude'])[:, None],
-                           np.array(trainDF['latitude'])[:, None],
-                           final_train_category,
-                           np.array(trainDF.num_upper_words)[:, None],
-                           np.array(trainDF.num_exclamation_mark)[:, None],
-                           np.array(trainDF.text_length)[:, None]))
+"""
+Extra Features
+"""
+final_train_extra_features = csr_matrix(trainDF[['longitude', 'latitude',
+                                                 'num_upper_words', 'num_exclamation_mark',
+                                                 'text_length']].values)
+final_test_extra_features = csr_matrix(testDF[['longitude', 'latitude',
+                                               'num_upper_words', 'num_exclamation_mark',
+                                               'text_length']].values)
 
-finalX_test2 = np.hstack((final_test_textTF.toarray(),
-                          np.array(testDF['longitude'])[:, None],
-                          np.array(testDF['latitude'])[:, None],
-                          final_test_category,
-                          np.array(testDF.num_upper_words)[:, None],
-                          np.array(testDF.num_exclamation_mark)[:, None],
-                          np.array(testDF.text_length)[:, None]))
-
-# ################### fitting svm model #################################################
-# weight = getproportion(finalX_train2,'stars')
-# wclf = svm.SVC(kernel='linear', class_weight=weight)
-# wclf.fit(X_train2, trainDF.stars)
-# finalpredY = wclf.predict(finalX_test2)
-# ##################print output#########################################################
-
-# from sklearn.ensemble import RandomForestClassifier
+"""
+Combine all features to get final Train-Test set
+"""
+finalX_train2 = hstack([final_train_textTF, final_train_category, final_train_extra_features])
+finalX_test2 = hstack([final_test_textTF, final_test_category, final_test_extra_features])
 #
-# clf = RandomForestClassifier(n_estimators=20)
-# clf = clf.fit(finalX_train2, trainDF.stars)
-# final_predY = clf.predict(finalX_test2)
-# pd.DataFrame(final_predY).to_csv('predict.csv', index=True)
+# finalX_train2 = np.hstack((final_train_textTF.toarray(),
+#                            np.array(trainDF['longitude'])[:, None],
+#                            np.array(trainDF['latitude'])[:, None],
+#                            final_train_category,
+#                            np.array(trainDF.num_upper_words)[:, None],
+#                            np.array(trainDF.num_exclamation_mark)[:, None],
+#                            np.array(trainDF.text_length)[:, None]))
+#
+# finalX_test2 = np.hstack((final_test_textTF.toarray(),
+#                           np.array(testDF['longitude'])[:, None],
+#                           np.array(testDF['latitude'])[:, None],
+#                           final_test_category,
+#                           np.array(testDF.num_upper_words)[:, None],
+#                           np.array(testDF.num_exclamation_mark)[:, None],
+#                           np.array(testDF.text_length)[:, None]))
 
-##########################
-# Decision Tree
-from sklearn import tree
-clf = tree.DecisionTreeClassifier()
-clf = clf.fit(finalX_train2, trainDF.stars)
-final_predY = clf.predict(finalX_test2)
-pd.DataFrame(final_predY).to_csv('predict_DTree.csv', index=False)
+print(finalX_train2.shape)
+print(finalX_test2.shape)
 
+
+def random_forest(finalX_train, finalY_train, finalX_test, n_parallel=1):
+    from sklearn.ensemble import RandomForestClassifier
+
+    clf = RandomForestClassifier(n_estimators=10, n_jobs=n_parallel)
+    clf = clf.fit(finalX_train, finalY_train)
+    finalY_pred = clf.predict(finalX_test)
+    return pd.DataFrame(finalY_pred)
+    # pd.DataFrame(finalY_pred).to_csv('predict_RF.csv', index=False)
+
+
+def decision_tree(finalX_train, finalY_train, finalX_test):
+    from sklearn import tree
+
+    clf = tree.DecisionTreeClassifier()
+    clf = clf.fit(finalX_train, finalY_train)
+    tree.export_graphviz(clf, out_file='sklearn_tree.dot')
+    finalY_pred = clf.predict(finalX_test)
+    return pd.DataFrame(finalY_pred)
+    # pd.DataFrame(finalY_pred).to_csv('predict_RF.csv', index=False)
+
+
+"""
+Fit RF model
+"""
+final_RF_pred = random_forest(finalX_train2, trainDF.stars, finalX_test2, n_parallel=4)
+final_RF_pred.to_csv('predict_RF.csv', index=False)
+
+"""
+Fit Decision Tree model
+"""
+final_DT_pred = decision_tree(finalX_train2, trainDF.stars, finalX_test2)
+final_DT_pred.to_csv('predict_DTree.csv', index=True)

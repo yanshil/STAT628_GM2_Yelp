@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 
-"""csv_splitter.py: Split the input csv with Pandas.DataFrame"""
+"""
+csv_splitter.py: Split the input csv with Pandas.DataFrame
+
+Example Usage:
+
+python3 csv_splitter.py -r 100000 C:\\Users\\kdrob\\Downloads\\train_data.csv train_output
+"""
 
 __author__ = "Yanshi Luo"
 __license__ = "GPL"

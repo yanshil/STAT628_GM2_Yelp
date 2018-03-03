@@ -42,8 +42,9 @@ if __name__ == '__main__':
                         help='The filename of the yelp review you\'d like to analyze.')
     parser.add_argument('output_filename',
                         help='The filename of the output you\'d like to stored as.')
-    parser.add_argument('--tiny',
+    parser.add_argument('-t', '--tiny',
                         help='Use a smaller data set to test the code.',
+                        default=False,
                         action='store_true')
     args = parser.parse_args()
 
