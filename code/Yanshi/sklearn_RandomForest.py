@@ -1,6 +1,6 @@
 import pandas as pd
 import re
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, TfidfTransformer
 from nltk.stem import PorterStemmer
 import numpy as np
 
@@ -142,13 +142,28 @@ categories = pd.concat(comment_categories)
 # cate.index = range(cate.shape[0])
 
 num_feature = 1000000
-tf_vectorizer = CountVectorizer(max_features=num_feature)
-final_textTF = tf_vectorizer.fit_transform(text)
+
+
+train_tfVec = TfidfVectorizer(max_features=num_feature)
+final_train_textTF = train_tfVec.fit_transform(trainDF.text)
+# Get Vocalbulary for generating sparse matrix
+train_features = train_tfVec.get_feature_names()
+
+test_tfVec = TfidfVectorizer(vocabulary=train_features)
+final_test_textTF = test_tfVec.fit_transform(trainDF.text)
+
+# # tf_vectorizer = CountVectorizer(max_features=num_feature)
+# final_textTF = tf_vectorizer.fit_transform(text)
+# tf_vectorizer.get_feature_names()
+
+print(n_train)
+print(n_test)
+# print(final_textTF.shape)
 
 ################### split the train and test to do the model fitting####################
-
-final_train_textTF = final_textTF[range(0, n_train), ]
-final_test_textTF = final_textTF[range(n_train, n_train + n_test), ]
+#
+# final_train_textTF = final_textTF[range(0, n_train), ]
+# final_test_textTF = final_textTF[range(n_train, n_train + n_test), ]
 
 final_category = get_category_sp(categories)
 final_train_category = final_category.iloc[0:n_train, ]
