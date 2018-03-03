@@ -101,36 +101,31 @@ def count_upper_word(text):
 
 train_filename = 'train_data.csv'
 test_filename = 'testval_data.csv'
-# dt_train = pd.read_csv(train_filename)
-# dt_test = pd.read_csv(test_filename)
+isUnitTest = True
+isFullTest = False
 
 trainDF = pd.read_csv(train_filename)
 testDF = pd.read_csv(test_filename)
 
-# dt_train = pd.read_csv(train_filename, sep=",", error_bad_lines=False, keep_default_na=False, na_values=[""],
-#                        engine='python')
-#
-# dt_test = pd.read_csv(test_filename, sep=",", error_bad_lines=False, keep_default_na=False, na_values=[""],
-#                       engine='python')
+if isFullTest:
+    trainDF = trainDF.head(15000)
 
-#trainDF = dt_train
-# trainDF = dt_train.head(100)
+if isUnitTest:
+    trainDF = trainDF.head(500)
+    testDF = testDF.head(10)
+
 n_train = trainDF.shape[0]
-# trainDF = range(trainDF.shape[0])
-#trainDF.text = process_reviews(trainDF.text)
+
 trainDF["text_length"] = pd.Series([len(i) for i in trainDF.text])
 trainDF["num_upper_words"] = pd.Series([count_upper_word(x) for x in trainDF.text])
 trainDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in trainDF.text])
 
-#testDF = dt_test
-# testDF = dt_test.head(2)
+
 n_test = testDF.shape[0]
-# testDF = range(testDF.shape[0])
-#testDF.text = process_reviews(testDF.text)
+
 testDF["text_length"] = pd.Series([len(i) for i in testDF.text])
 testDF["num_upper_words"] = pd.Series([count_upper_word(x) for x in testDF.text])
 testDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in testDF.text])
-
 
 comment_text = [trainDF.text, testDF.text]
 text = pd.concat(comment_text)
@@ -142,7 +137,6 @@ categories = pd.concat(comment_categories)
 # cate.index = range(cate.shape[0])
 
 num_feature = 1000000
-
 
 train_tfVec = TfidfVectorizer(max_features=num_feature)
 final_train_textTF = train_tfVec.fit_transform(trainDF.text)
@@ -156,9 +150,10 @@ final_test_textTF = test_tfVec.fit_transform(trainDF.text)
 # final_textTF = tf_vectorizer.fit_transform(text)
 # tf_vectorizer.get_feature_names()
 
-print(n_train)
-print(n_test)
-# print(final_textTF.shape)
+# print(n_train)
+# print(n_test)
+print(final_train_textTF.shape)
+print(final_test_textTF.shape)
 
 ################### split the train and test to do the model fitting####################
 #
@@ -205,9 +200,9 @@ pd.DataFrame(final_predY).to_csv('predict_RF.csv', index=False)
 
 ##########################
 # Decision Tree
-# from sklearn import tree
-# clf = tree.DecisionTreeClassifier()
-# clf = clf.fit(finalX_train2, trainDF)
-# final_predY = clf.predict(finalX_test2)
-# pd.DataFrame(final_predY).to_csv('predict.csv', index=True)
+from sklearn import tree
 
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(finalX_train2, trainDF)
+final_predY = clf.predict(finalX_test2)
+pd.DataFrame(final_predY).to_csv('predict_DTree.csv', index=True)
