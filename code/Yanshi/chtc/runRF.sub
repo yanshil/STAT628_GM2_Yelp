@@ -1,0 +1,17 @@
+universe = vanilla
+log = hello-chtc_$(Cluster).log
+error = hello-chtc_$(Cluster)_$(Process).err
+
+executable = runRF.sh
+arguments = $(Process)
+output = hello-chtc_$(Cluster)_$(Process).out
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = sklearn_RandomForest.py, train_data.csv, testval_data.csv, anaconda3.tar.gz
+
+request_cpus = 4
+request_memory = 50GB
+request_disk = 100GB
+
+queue 1
