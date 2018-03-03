@@ -144,7 +144,7 @@ final_train_textTF = train_tfVec.fit_transform(trainDF.text)
 train_features = train_tfVec.get_feature_names()
 
 test_tfVec = TfidfVectorizer(vocabulary=train_features)
-final_test_textTF = test_tfVec.fit_transform(trainDF.text)
+final_test_textTF = test_tfVec.fit_transform(testDF.text)
 
 # # tf_vectorizer = CountVectorizer(max_features=num_feature)
 # final_textTF = tf_vectorizer.fit_transform(text)
@@ -183,6 +183,8 @@ finalX_test2 = np.hstack((final_test_textTF.toarray(),
                           np.array(testDF.num_exclamation_mark)[:, None],
                           np.array(testDF.text_length)[:, None]))
 
+print(finalX_train2.shape)
+print(finalX_test2.shape)
 # ################### fitting svm model #################################################
 # weight = getproportion(finalX_train2,'stars')
 # wclf = svm.SVC(kernel='linear', class_weight=weight)
@@ -203,6 +205,6 @@ pd.DataFrame(final_predY).to_csv('predict_RF.csv', index=False)
 from sklearn import tree
 
 clf = tree.DecisionTreeClassifier()
-clf = clf.fit(finalX_train2, trainDF)
+clf = clf.fit(finalX_train2, trainDF.stars)
 final_predY = clf.predict(finalX_test2)
 pd.DataFrame(final_predY).to_csv('predict_DTree.csv', index=True)
