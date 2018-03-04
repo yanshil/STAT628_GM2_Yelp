@@ -117,7 +117,7 @@ Scripts for features generating and Models
 train_filename = 'train_data.csv'
 test_filename = 'testval_data.csv'
 
-isUnitTest = True
+isUnitTest = False
 isFullTest = False  # Generate full prediction result with small train sample
 
 trainDF = pd.read_csv(train_filename)
@@ -142,9 +142,9 @@ testDF["text_length"] = pd.Series([len(i) for i in testDF.text])
 testDF["num_upper_words"] = pd.Series([count_upper_word(x) for x in testDF.text])
 testDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in testDF.text])
 
-comment_text = [trainDF.text, testDF.text]
-text = pd.concat(comment_text)
-text = process_reviews(text)
+# comment_text = [trainDF.text, testDF.text]
+# text = pd.concat(comment_text)
+# text = process_reviews(text)
 
 """
 Get TF-IDF from Text
@@ -179,11 +179,13 @@ final_test_category = csr_matrix(final_category.iloc[n_train: n_train + n_test, 
 """
 Extra Features
 """
-final_train_extra_features = csr_matrix(trainDF[['longitude', 'latitude',
-                                                 'num_upper_words', 'num_exclamation_mark',
+final_train_extra_features = csr_matrix(trainDF[['city',
+                                                 'num_upper_words',
+                                                 'num_exclamation_mark',
                                                  'text_length']].values)
-final_test_extra_features = csr_matrix(testDF[['longitude', 'latitude',
-                                               'num_upper_words', 'num_exclamation_mark',
+final_test_extra_features = csr_matrix(testDF[['city',
+                                               'num_upper_words',
+                                               'num_exclamation_mark',
                                                'text_length']].values)
 
 """
@@ -191,22 +193,7 @@ Combine all features to get final Train-Test set
 """
 finalX_train2 = hstack([final_train_textTF, final_train_category, final_train_extra_features])
 finalX_test2 = hstack([final_test_textTF, final_test_category, final_test_extra_features])
-#
-# finalX_train2 = np.hstack((final_train_textTF.toarray(),
-#                            np.array(trainDF['longitude'])[:, None],
-#                            np.array(trainDF['latitude'])[:, None],
-#                            final_train_category,
-#                            np.array(trainDF.num_upper_words)[:, None],
-#                            np.array(trainDF.num_exclamation_mark)[:, None],
-#                            np.array(trainDF.text_length)[:, None]))
-#
-# finalX_test2 = np.hstack((final_test_textTF.toarray(),
-#                           np.array(testDF['longitude'])[:, None],
-#                           np.array(testDF['latitude'])[:, None],
-#                           final_test_category,
-#                           np.array(testDF.num_upper_words)[:, None],
-#                           np.array(testDF.num_exclamation_mark)[:, None],
-#                           np.array(testDF.text_length)[:, None]))
+
 
 print(finalX_train2.shape)
 print(finalX_test2.shape)
@@ -219,7 +206,6 @@ def random_forest(finalX_train, finalY_train, finalX_test, n_parallel=1):
     clf = clf.fit(finalX_train, finalY_train)
     finalY_pred = clf.predict(finalX_test)
     return pd.DataFrame(finalY_pred)
-    # pd.DataFrame(finalY_pred).to_csv('predict_RF.csv', index=False)
 
 
 def decision_tree(finalX_train, finalY_train, finalX_test):
@@ -242,5 +228,5 @@ final_RF_pred.to_csv('predict_RF.csv', index=False)
 """
 Fit Decision Tree model
 """
-final_DT_pred = decision_tree(finalX_train2, trainDF.stars, finalX_test2)
-final_DT_pred.to_csv('predict_DTree.csv', index=False)
+# final_DT_pred = decision_tree(finalX_train2, trainDF.stars, finalX_test2)
+# final_DT_pred.to_csv('predict_DTree.csv', index=False)
