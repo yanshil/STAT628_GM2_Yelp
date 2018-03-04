@@ -153,12 +153,12 @@ Get TF-IDF from Text
 num_feature = 1000000
 
 train_tfVec = TfidfVectorizer(max_features=num_feature)
-final_train_textTF = train_tfVec.fit_transform(trainDF.text)
+final_train_textTF = train_tfVec.fit_transform(process_reviews(trainDF.text))
 # Get Vocalbulary for generating sparse matrix
 train_features = train_tfVec.get_feature_names()
 
 test_tfVec = TfidfVectorizer(vocabulary=train_features)
-final_test_textTF = test_tfVec.fit_transform(testDF.text)
+final_test_textTF = test_tfVec.fit_transform(process_reviews(testDF.text))
 
 print(final_train_textTF.shape)
 print(final_test_textTF.shape)
