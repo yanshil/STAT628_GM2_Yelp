@@ -243,4 +243,4 @@ final_RF_pred.to_csv('predict_RF.csv', index=False)
 Fit Decision Tree model
 """
 final_DT_pred = decision_tree(finalX_train2, trainDF.stars, finalX_test2)
-final_DT_pred.to_csv('predict_DTree.csv', index=True)
+final_DT_pred.to_csv('predict_DTree.csv', index=False)
