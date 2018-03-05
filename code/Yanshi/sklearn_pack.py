@@ -176,14 +176,19 @@ final_category = get_category_sp(categories)
 final_train_category = csr_matrix(final_category.iloc[0:n_train, ].values)
 final_test_category = csr_matrix(final_category.iloc[n_train: n_train + n_test, ].values)
 
+
+
 """
 Extra Features
 """
-final_train_extra_features = csr_matrix(trainDF[['city',
+trainDF['cityID'] = pd.Categorical(trainDF.city).codes
+testDF['cityID'] = pd.Categorical(testDF.city).codes
+
+final_train_extra_features = csr_matrix(trainDF[['cityID',
                                                  'num_upper_words',
                                                  'num_exclamation_mark',
                                                  'text_length']].values)
-final_test_extra_features = csr_matrix(testDF[['city',
+final_test_extra_features = csr_matrix(testDF[['cityID',
                                                'num_upper_words',
                                                'num_exclamation_mark',
                                                'text_length']].values)
