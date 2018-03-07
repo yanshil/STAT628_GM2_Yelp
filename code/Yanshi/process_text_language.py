@@ -1,9 +1,9 @@
 import pandas as pd
 
-import os
-
-path = 'C:\\Users\\kdrob\\Downloads'
-os.chdir(path)
+# import os
+# 
+# path = 'C:\\Users\\kdrob\\Downloads'
+# os.chdir(path)
 
 train_filename = 'train_data.csv'
 test_filename = 'testval_data.csv'

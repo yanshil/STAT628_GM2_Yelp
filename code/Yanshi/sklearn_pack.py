@@ -8,9 +8,9 @@ __email__ = "yluo82@wisc.edu"
 
 import pandas as pd
 import re
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from nltk.stem import PorterStemmer
-import numpy as np
+import string
 
 """
 Text Processing Rules @ Peijin
@@ -63,16 +63,27 @@ def decontracted(phrase):
     return phrase
 
 
+def remove_punctuation(text):
+
+    remove_punct_map = dict.fromkeys(map(ord, string.punctuation))
+
+    return text.translate(remove_punct_map)
+
+
 def process_reviews(dirty_data_set):
     clean_data_set = []
     for review in dirty_data_set:
+
+        # Language Detect and Translate
+        # Translated Data
         review = decontracted(review)
         # Remove punctuations
-        review = re.sub(r'[^a-zA-Z]', ' ', review)
+        review = remove_punctuation(review)
         # To lowercase
         review = review.lower()
-        # Remove stop words
+        # Remove stop words & Word Stem
         texts = [ps.stem(word) for word in review.lower().split() if word not in customized_stopwords_list]
+
         try:
             clean_data_set.append(' '.join(texts))
         except:
@@ -117,14 +128,10 @@ Scripts for features generating and Models
 train_filename = 'train_data.csv'
 test_filename = 'testval_data.csv'
 
-isUnitTest = False
-isFullTest = False  # Generate full prediction result with small train sample
+isUnitTest = True
 
 trainDF = pd.read_csv(train_filename)
 testDF = pd.read_csv(test_filename)
-
-if isFullTest:
-    trainDF = trainDF.head(15000)
 
 if isUnitTest:
     trainDF = trainDF.head(500)
@@ -152,12 +159,12 @@ Get TF-IDF from Text
 
 num_feature = 1000000
 
-train_tfVec = TfidfVectorizer(max_features=num_feature)
+train_tfVec = CountVectorizer(max_features=num_feature)
 final_train_textTF = train_tfVec.fit_transform(process_reviews(trainDF.text))
 # Get Vocalbulary for generating sparse matrix
 train_features = train_tfVec.get_feature_names()
 
-test_tfVec = TfidfVectorizer(vocabulary=train_features)
+test_tfVec = CountVectorizer(vocabulary=train_features)
 final_test_textTF = test_tfVec.fit_transform(process_reviews(testDF.text))
 
 print(final_train_textTF.shape)
@@ -224,14 +231,29 @@ def decision_tree(finalX_train, finalY_train, finalX_test):
     # pd.DataFrame(finalY_pred).to_csv('predict_RF.csv', index=False)
 
 
+def neural_network(finalX_train, finalY_train, finalX_test):
+    from sklearn.neural_network import MLPClassifier
+
+    clf = MLPClassifier(solver='adam', alpha=1e-5, random_state=1)
+    clf = clf.fit(finalX_train, finalY_train)
+    finalY_pred = clf.predict(finalX_test)
+    return pd.DataFrame(finalY_pred)
+
+
 """
 Fit RF model
 """
-final_RF_pred = random_forest(finalX_train2, trainDF.stars, finalX_test2, n_parallel=4)
-final_RF_pred.to_csv('predict_RF.csv', index=False)
+# final_RF_pred = random_forest(finalX_train2, trainDF.stars, finalX_test2, n_parallel=4)
+# final_RF_pred.to_csv('predict_RF.csv', index=False)
 
 """
 Fit Decision Tree model
 """
 # final_DT_pred = decision_tree(finalX_train2, trainDF.stars, finalX_test2)
 # final_DT_pred.to_csv('predict_DTree.csv', index=False)
+
+"""
+Fit NN model
+"""
+final_NN_pred = neural_network(finalX_train2, trainDF.stars, finalX_test2)
+final_NN_pred.to_csv('predict_NN.csv', index=False)
