@@ -1,6 +1,17 @@
-hello-chtc_39599.log	TFIDF: RF
+hello-chtc_39599.log	TFIDF: RF  with cityID
 hello-chtc_39627.log	Google Translate Train
 hello-chtc_39628.log	Google Translate Test
-hello-chtc_39632.log	Counter: NN
-hello-chtc_39633.log	Counter: RF
-hello-chtc_39634.log	Counter: DTree
+hello-chtc_39632.log	Counter: NN  with cityID
+hello-chtc_39633.log	Counter: RF  with cityID
+hello-chtc_39634.log	Counter: DTree  with cityID
+hello-chtc_39635.log	get_Text
+
+
+[yluo82@learn chtc]$ condor_q
+-- Schedd: learn.chtc.wisc.edu : <128.104.100.43:9618?... @ 03/07/18 03:11:47
+OWNER  BATCH_NAME                       SUBMITTED   DONE   RUN    IDLE  TOTAL JOB_IDS
+yluo82 CMD: runRF.sh                   3/6  20:16      _      2      _      2 39627.0 ... 39628.0
+yluo82 CMD: /home/yluo82/chtc/run.sh   3/7  02:11      _      3      _      3 39632.0 ... 39634.0
+yluo82 CMD: runText.sh                 3/7  03:11      _      _      1      1 39635.0
+
+6 jobs; 0 completed, 0 removed, 1 idle, 5 running, 0 held, 0 suspended	
