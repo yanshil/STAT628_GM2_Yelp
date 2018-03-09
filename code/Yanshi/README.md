@@ -2,7 +2,7 @@
 
 * run_text2vec.py: Run Doc2vec Input ML model
 
-* run_skML.py: run Machine Learning Models of sklearn with tidied input
+* run_skML.py: Run Machine Learning Models of sklearn with tidied input
 
 ## Packages
 
