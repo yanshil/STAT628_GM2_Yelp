@@ -9,9 +9,10 @@ __email__ = "yluo82@wisc.edu"
 
 from gensim.models import Doc2Vec
 import pandas as pd
-import process_text
 import numpy as np
 from scipy.sparse import csr_matrix, hstack
+
+import process_text
 import extra_features2csr
 from sklearn_pack import random_forest
 

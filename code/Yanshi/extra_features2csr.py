@@ -4,11 +4,10 @@ import re
 from scipy.sparse import csr_matrix
 
 
-def get_extra_features(data, text_length=True,
-                       num_upper_words=False, num_exclamation_mark=False,
-                       city=False):
-
-    # n_train = trainDF.shape[0]
+def get_extra_features(data, text_length=True, num_upper_words=True,
+                       num_exclamation_mark=True, city=True,
+                       num_question_mark=True, num_dollar=True,
+                       num_percent=True, num_facebad=True, num_facegood=True ):
 
     feature_list = []
     if text_length:
@@ -26,6 +25,26 @@ def get_extra_features(data, text_length=True,
     if city:
         data['cityID'] = pd.Categorical(data.city).codes
         feature_list.append('cityID')
+
+    if num_question_mark:
+        data['num_question_mark'] = pd.Series([len(re.findall(r'\?', x)) for x in data.text])
+        feature_list.append('num_question_mark')
+
+    if num_dollar:
+        data['num_dollar'] = pd.Series([len(re.findall(r'\$', x)) for x in data.text])
+        feature_list.append('num_dollar')
+
+    if num_percent:
+        data['num_percent'] = pd.Series([len(re.findall(r'\%', x)) for x in data.text])
+        feature_list.append('num_percent')
+
+    if num_facebad:
+        data['num_facebad'] = pd.Series([len(re.findall(r'\:\(', x)) for x in data.text])
+        feature_list.append('num_facebad')
+
+    if num_facegood:
+        data['num_facegood'] = pd.Series([len(re.findall(r'\:\)', x)) for x in data.text])
+        feature_list.append('num_facegood')
 
     final_extra_features = csr_matrix(data[feature_list].values)
 
