@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 """
-tidy_category.py: Tidy Yelp Review Categories. Get Frequency Table (and Sparse Matrix)
+get_category_freq.py: Tidy Yelp Review Categories. Get Frequency Table (and Sparse Matrix)
 
 Example Usage:
 
-python3 tidy_category.py -s train_output0.csv categories_dict
+python3 get_category_freq.py -s train_output0.csv categories_dict
 """
 
 __author__ = "Yanshi Luo"
@@ -13,7 +13,7 @@ __license__ = "GPL"
 __email__ = "yluo82@wisc.edu"
 
 
-def tidy_category(review_filename, output, tiny, sp):
+def get_category_freq(review_filename, output, tiny, sp):
     import pandas as pd
     import re
     from collections import Counter
@@ -76,4 +76,4 @@ if __name__ == '__main__':
                         action='store_true')
     args = parser.parse_args()
 
-    tidy_category(args.review_filename, args.output, args.tiny, args.sparseMatrix)
+    get_category_freq(args.review_filename, args.output, args.tiny, args.sparseMatrix)

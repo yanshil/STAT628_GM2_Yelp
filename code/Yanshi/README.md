@@ -37,12 +37,10 @@ final_RF_pred = random_forest(finalX_train2, trainDF.stars, finalX_test2, n_para
 final_RF_pred.to_csv('predict_RF', index=False)
 ```
 
-Submit high-memory used jobs to [CHTC](http://chtc.cs.wisc.edu/) with sub and sh files in `./chtc/`
-
 ## Util
 
-### csv_splitter.py: Split the input csv with Pandas.DataFrame
+Some tiny scripts to do the explaratory analysis
 
-usage: csv_splitter.py [-h] [-r ROWS] review_filename output_template
+## chtc
 
-Split the Input File with Pandas.DataFrame
+Submit templates for running high-memory jobs in [CHTC](http://chtc.cs.wisc.edu/)
