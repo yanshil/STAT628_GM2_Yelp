@@ -1,8 +1,15 @@
-import re
+#!/usr/bin/env python3
 
 """
-Text Processing Rules @ Peijin
+process_text.py: Define Text processing rules
 """
+
+__author__ = "Yanshi Luo", "Peijin"
+__license__ = "GPL"
+__email__ = "yluo82@wisc.edu"
+
+import re
+
 
 def decontracted(phrase):
     # specific

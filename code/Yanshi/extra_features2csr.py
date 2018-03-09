@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+
+"""
+extra_features2csr.py: Tidy Non-Text/Category features to csr sparse matrix
+"""
+
+__author__ = "Yanshi Luo"
+__license__ = "GPL"
+__email__ = "yluo82@wisc.edu"
+
+
 import pandas as pd
 import process_text
 import re
@@ -7,7 +18,7 @@ from scipy.sparse import csr_matrix
 def get_extra_features(data, text_length=True, num_upper_words=True,
                        num_exclamation_mark=True, city=True,
                        num_question_mark=True, num_dollar=True,
-                       num_percent=True, num_facebad=True, num_facegood=True ):
+                       num_percent=True, num_facebad=True, num_facegood=True):
 
     feature_list = []
     if text_length:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-run_skML.py: Do Model training with large sparse matrix with sklearn ML model
+run_skML.py: run Machine Learning Models of sklearn with tidied input
 """
 
 __author__ = "Yanshi Luo", "Peijin Li"

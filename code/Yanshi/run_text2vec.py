@@ -1,6 +1,5 @@
-
 """
-doc2vec_model.py: Train Model with doc2vec
+run_text2vec.py: Run Doc2vec Input ML model
 """
 
 __author__ = "Yanshi Luo", "Peijin Li"
@@ -32,8 +31,6 @@ if isUnitTest:
     trainDF = trainDF.head(500)
     testDF = testDF.head(10)
 
-n_train = trainDF.shape[0]
-n_test = testDF.shape[0]
 
 model = Doc2Vec.load('./yelp.doc2vec')
 # model = Doc2Vec.load('C:\\Users\\kdrob\\OneDrive - UW-Madison\\'
@@ -46,7 +43,7 @@ def get_text_vec(data):
 
     M = np.empty((0, model.vector_size))
 
-    for i in range(0, n_train):
+    for i in range(0, data.shape[0]):
         vec = model.infer_vector(data.tokens[i])
         M = np.concatenate((M, vec[:, None].T), axis=0)
 
