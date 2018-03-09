@@ -1,5 +1,7 @@
 
-"""doc2vec_model.py: Train Model with doc2vec"""
+"""
+doc2vec_model.py: Train Model with doc2vec
+"""
 
 __author__ = "Yanshi Luo", "Peijin Li"
 __license__ = "GPL"
@@ -29,9 +31,14 @@ documents = []
 for i in range(0, n_train):
     documents.append(LabeledSentence(words=trainDF.tokens[i], tags=[trainDF.stars[i]]))
 
-model = Doc2Vec(size=10, window=8, min_count=0, workers=4)
+model = Doc2Vec(vector_size=50, window=10, min_count=10, workers=4)
+# vector_size (int) – Dimensionality of the feature vectors.
+# window (int) – The maximum distance between the current and predicted word within a sentence.
+# min_count (int) – Ignores all words with total frequency lower than this.
+# workers (int) – Use these many worker threads to train the model (=faster training with multicore machines).
 model.build_vocab(documents)
 model.train(documents, total_examples=n_train, epochs=10)
+print(len(model.wv.vocab))
 model.save('./yelp.doc2vec')
 
 # model.infer_vector(trainDF.tokens[0])
