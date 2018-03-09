@@ -9,8 +9,9 @@ __license__ = "GPL"
 __email__ = "yluo82@wisc.edu"
 
 import pandas as pd
-import re
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from scipy.sparse import csr_matrix, hstack
+from sklearn.feature_extraction.text import CountVectorizer
+import extra_features2csr
 import process_text
 
 """
@@ -34,16 +35,15 @@ if isUnitTest:
     testDF = testDF.head(10)
 
 n_train = trainDF.shape[0]
-
-trainDF["text_length"] = pd.Series([len(i) for i in trainDF.text])
-trainDF["num_upper_words"] = pd.Series([process_text.count_upper_word(x) for x in trainDF.text])
-trainDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in trainDF.text])
-
 n_test = testDF.shape[0]
-
-testDF["text_length"] = pd.Series([len(i) for i in testDF.text])
-testDF["num_upper_words"] = pd.Series([process_text.count_upper_word(x) for x in testDF.text])
-testDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in testDF.text])
+#
+# trainDF["text_length"] = pd.Series([len(i) for i in trainDF.text])
+# trainDF["num_upper_words"] = pd.Series([process_text.count_upper_word(x) for x in trainDF.text])
+# trainDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in trainDF.text])
+#
+# testDF["text_length"] = pd.Series([len(i) for i in testDF.text])
+# testDF["num_upper_words"] = pd.Series([process_text.count_upper_word(x) for x in testDF.text])
+# testDF["num_exclamation_mark"] = pd.Series([len(re.findall(r'!', x)) for x in testDF.text])
 
 """
 Get TF-IDF from Text
@@ -68,8 +68,6 @@ Get Sparse Matrix from Categories
 comment_categories = [trainDF.categories, testDF.categories]
 categories = pd.concat(comment_categories)
 
-from scipy.sparse import csr_matrix, hstack
-
 final_category = process_text.get_category_sp(categories)
 # a = csr_matrix(final_category.values)
 final_train_category = csr_matrix(final_category.iloc[0:n_train, ].values)
@@ -79,17 +77,21 @@ final_test_category = csr_matrix(final_category.iloc[n_train: n_train + n_test, 
 """
 Extra Features
 """
-trainDF['cityID'] = pd.Categorical(trainDF.city).codes
-testDF['cityID'] = pd.Categorical(testDF.city).codes
+# trainDF['cityID'] = pd.Categorical(trainDF.city).codes
+# testDF['cityID'] = pd.Categorical(testDF.city).codes
 
-final_train_extra_features = csr_matrix(trainDF[['cityID',
-                                                 'num_upper_words',
-                                                 'num_exclamation_mark',
-                                                 'text_length']].values)
-final_test_extra_features = csr_matrix(testDF[['cityID',
-                                               'num_upper_words',
-                                               'num_exclamation_mark',
-                                               'text_length']].values)
+# final_train_extra_features = csr_matrix(trainDF[['cityID',
+#                                                  'num_upper_words',
+#                                                  'num_exclamation_mark',
+#                                                  'text_length']].values)
+# final_test_extra_features = csr_matrix(testDF[['cityID',
+#                                                'num_upper_words',
+#                                                'num_exclamation_mark',
+#                                                'text_length']].values)
+
+final_train_extra_features = extra_features2csr.get_extra_features(trainDF)
+final_test_extra_features = extra_features2csr.get_extra_features(testDF)
+
 
 """
 Combine all features to get final Train-Test set
