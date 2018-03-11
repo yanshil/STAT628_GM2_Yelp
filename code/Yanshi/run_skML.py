@@ -15,6 +15,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import extra_features2csr
 import process_text
 import sklearn_pack
+import load_vocab
 import sys
 
 """
@@ -47,8 +48,6 @@ n_test = testDF.shape[0]
 """
 load_vocabulary
 """
-import load_vocab
-
 vocab_neg = load_vocab.read_features2vocab("negative.txt")
 vocab_pos = load_vocab.read_features2vocab("positive.txt")
 
@@ -73,13 +72,20 @@ print(final_test_textTF.shape)
 """
 Get Sparse Matrix from Categories 
 """
-comment_categories = [trainDF.categories, testDF.categories]
-categories = pd.concat(comment_categories)
+good_cate_list = ['Delis', 'Polish', 'Vegan', 'French', 'Peruvian']
+bad_cate_list = ['Chicken_Wings', 'Fast_Food', 'Buffets', 'Tex-Mex', 'Burgers']
+full_list = [x.lower() for x in good_cate_list + bad_cate_list]
 
-final_category = process_text.get_category_sp(categories)
-# a = csr_matrix(final_category.values)
-final_train_category = csr_matrix(final_category.iloc[0:n_train, ].values)
-final_test_category = csr_matrix(final_category.iloc[n_train: n_train + n_test, ].values)
+final_train_category = load_vocab.get_category_features_sp(trainDF.categories, full_list)
+final_test_category = load_vocab.get_category_features_sp(testDF.categories, full_list)
+
+# comment_categories = [trainDF.categories, testDF.categories]
+# categories = pd.concat(comment_categories)
+#
+# final_category = process_text.get_category_sp(categories)
+# # a = csr_matrix(final_category.values)
+# final_train_category = csr_matrix(final_category.iloc[0:n_train, ].values)
+# final_test_category = csr_matrix(final_category.iloc[n_train: n_train + n_test, ].values)
 
 """
 Previous Model Input

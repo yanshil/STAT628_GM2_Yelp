@@ -44,7 +44,7 @@ def read_features2vocab(filename):
     from nltk.stem import PorterStemmer
     ps = PorterStemmer()
     with open(filename, 'r') as f:
-        feature_list = [line.strip() for line in f]
+        feature_list = [line.decode('utf-8').strip() for line in f]
 
     return [ps.stem(word).lower() for word in feature_list]
 
