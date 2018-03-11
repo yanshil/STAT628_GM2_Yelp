@@ -20,6 +20,7 @@ def get_extra_features(data, text_length=True, num_upper_words=True,
                        num_question_mark=True, num_dollar=True,
                        num_percent=True, num_facebad=True, num_facegood=True):
 
+    data = data.reset_index()
     feature_list = []
     if text_length:
         data["text_length"] = pd.Series([len(i) for i in data.text])
@@ -60,6 +61,13 @@ def get_extra_features(data, text_length=True, num_upper_words=True,
     final_extra_features = csr_matrix(data[feature_list].values)
 
     return final_extra_features
+
+
+def label_input(filename):
+    data = pd.read_csv(filename)
+
+    return csr_matrix(data)
+
 
 
 # comment_categories = [trainDF.categories, testDF.categories]

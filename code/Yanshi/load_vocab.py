@@ -32,6 +32,8 @@ def get_category_features_sp(category, vocab):
 
 def get_text_features_sp(text, vocab):
     text = process_text(text)
+    # Unique
+    vocab = list(set(vocab))
     text_feature_counter = CountVectorizer(vocabulary=vocab)
     text_feature_sp = text_feature_counter.fit_transform(text)
 

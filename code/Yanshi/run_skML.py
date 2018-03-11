@@ -52,7 +52,7 @@ import load_vocab
 vocab_neg = load_vocab.read_features2vocab("negative.txt")
 vocab_pos = load_vocab.read_features2vocab("positive.txt")
 
-train_tfVec = CountVectorizer(vocabulary=vocab_neg + vocab_pos)
+train_tfVec = CountVectorizer(vocabulary=list(set(vocab_neg + vocab_pos)))
 
 
 """
