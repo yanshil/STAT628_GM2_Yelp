@@ -11,13 +11,18 @@ __email__ = "yluo82@wisc.edu"
 import pandas as pd
 
 
-def random_forest(finalX_train, finalY_train, finalX_test, n_parallel=1):
+def random_forest(finalX_train, finalY_train, finalX_test, n_parallel=1, write_csv=False, write_filename='rf_pref.csv'):
     from sklearn.ensemble import RandomForestClassifier
 
     clf = RandomForestClassifier(n_estimators=10, n_jobs=n_parallel)
     clf = clf.fit(finalX_train, finalY_train)
     finalY_pred = clf.predict(finalX_test)
-    return pd.DataFrame(finalY_pred)
+    finalY_pred_DF = pd.DataFrame(finalY_pred)
+
+    if write_csv:
+        finalY_pred_DF.to_csv(write_filename, index=False)
+
+    return finalY_pred_DF
 
 
 def decision_tree(finalX_train, finalY_train, finalX_test, dot=False):

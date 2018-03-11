@@ -28,14 +28,13 @@ def decontracted(phrase):
     phrase = re.sub(r"\'t", " not", phrase)
     phrase = re.sub(r"\'ve", " have", phrase)
     phrase = re.sub(r"\'m", " am", phrase)
+    phrase = re.sub(r"cannot", "can not", phrase)
     return phrase
 
 
 def remove_punctuation(text):
-    import string
-
-    remove_punct_map = dict.fromkeys(map(ord, string.punctuation))
-
+    # import string
+    remove_punct_map = dict.fromkeys(map(ord, '!"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~'))
     return text.translate(remove_punct_map)
 
 
@@ -77,16 +76,18 @@ def process_reviews(dirty_data_set):
     for review in dirty_data_set:
 
         # Language Detect and Translate
-        # Translated Data
-        review = decontracted(review)
-        # Remove punctuations
-        review = remove_punctuation(review)
-        # Remove blanks
-        review = re.sub(r'\s+', ' ', review)
         # To lowercase
         review = review.lower()
+        # Translated Data
+        review = decontracted(review)
+        # Remove blanks
+        review = re.sub(r'\s+', ' ', review)
+        # Tag Negative
+        review = tag_neg(review)
+        # Remove punctuations
+        review = remove_punctuation(review)
         # Remove stop words & Word Stem
-        texts = [ps.stem(word) for word in review.lower().split() if word not in customized_stopwords_list]
+        texts = [ps.stem(word) for word in review.split() if word not in customized_stopwords_list]
 
         try:
             clean_data_set.append(' '.join(texts))
@@ -121,3 +122,11 @@ def count_upper_word(text):
 
     return count
 
+
+def tag_neg(review):
+    import re
+    transformed = re.sub(r'\b(?:not|never|no)\b[\w\s]+[^\w\s]',
+                         lambda match: re.sub(r'(\s+)(\w+)', r'\1not_\2', match.group(0)),
+                         review,
+                         flags=re.IGNORECASE)
+    return transformed
