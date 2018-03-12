@@ -3,4 +3,4 @@ hello-chtc_39632.log	Counter: NN  with cityID
 hello-chtc_39633.log	Counter: RF  with cityID
 hello-chtc_39634.log	Counter: DTree  with cityID
 hello-chtc_39655.log	Training doc2vec Model
-hello-chtc_39746.log	TFIDF: with Negation
+hello-chtc_39746.log	TFIDF: RF with city/name features
