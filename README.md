@@ -1,38 +1,17 @@
 # STAT 628: Mon Group 2
 
-分工：
-netural network: shi
+## Description
 
-random forest: shi
+This repo is for the second course project of STAT 628 (Spring 2018, University of Wisconsin-Madison).
 
-dicision tree: shi
+## Content
 
-Bayesian:both
-
-xgb: both
-
-adboost: both
-
-LDA: pei
-
-logistic: pei
-
-SVM: pei
-
-罗决策树:pei
-
-黄文：
-
-data cleaning: stop words, 正则表达式, TFIDF ,划词 
-
-model1：nltk + 餐厅名字 
-
-餐厅地图表 + 圆圈:数量 + 颜色：avg score (红绿色)
-
-base line
-
-已经试过的模型及其结果
-
-未来要做的
-
-拟合新变量!!!! foodname drinkname
+* `./code/`: All related code for analysis with separate folders created by code contributors. Please see the separate README in each folder for details. 
+    * Peijinli-mainmodel: Codes for LDA, Naive Bayesian, LSTM and Final Linear model
+    * Yanshi: Codes for Random Forest, Decision Tree
+    * Wen: Codes for Data Visualization
+* `./data/`: feature analysis output 
+    * Features extracted from `Text`: food_list, foodcount, num_exclamation_mark, num_upper_word
+    * Other features: city, name, categories_dict
+* `./img/`: feature analysis figures and diagnostic plot.
+* `./ExecutiveSummary`: With a Jupyter Notebook Executive Summary.
