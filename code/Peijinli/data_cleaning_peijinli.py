@@ -4,12 +4,6 @@ Created on Sun Feb 25 10:41:28 2018
 
 @author: Peiji
 """
-
-import time
-import datetime
-
-import _pickle as pickle
-import matplotlib.pyplot as plt
 import nltk
 import numpy as np
 import pandas as pd
