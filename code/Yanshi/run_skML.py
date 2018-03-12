@@ -45,20 +45,12 @@ if isUnitTest:
 n_train = trainDF.shape[0]
 n_test = testDF.shape[0]
 
-"""
-load_vocabulary
-"""
-vocab_neg = load_vocab.read_features2vocab("negative.txt")
-vocab_pos = load_vocab.read_features2vocab("positive.txt")
-
-train_tfVec = CountVectorizer(vocabulary=list(set(vocab_neg + vocab_pos)))
-
 
 """
 Get TF-IDF from Text
 """
-# num_feature = 1000000
-# train_tfVec = CountVectorizer(max_features=num_feature)
+num_feature = 1000000
+train_tfVec = CountVectorizer(max_features=num_feature)
 final_train_textTF = train_tfVec.fit_transform(process_text.process_reviews(trainDF.text))
 # Get Vocalbulary for generating sparse matrix
 train_features = train_tfVec.get_feature_names()
