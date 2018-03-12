@@ -109,7 +109,7 @@ multiplot(p1,p2,p3,p4,cols = 2)
 
 
 
-# 感叹号
+# Exclamation
 exclamation <- read_csv("C:/Users/Wen/Desktop/STAT 628/module2/plot/num_exclamation_mark.csv")
 one <- exclamation%>%filter(stars == 1)%>% 
             filter(num_exclamation_mark != 0) %>% 
@@ -131,26 +131,26 @@ mean = exclamation %>% group_by(stars) %>%
                       summarise(mean = sum(multiply)/sum(count))
                        
 
-                           
 q1 = ggplot(one, aes(x=num_exclamation_mark, y=count/sum(count))) + 
-  geom_bar(stat="identity", fill="lightblue", colour="black") + labs(title = "one star")+xlim(0,125)+ylim(0,0.5)
+  geom_bar(stat="identity", fill="lightblue", colour="black") + labs(title = "one star")+xlim(0,125)+ylim(0,0.5)+ylab("Count")
 
 q2 = ggplot(two, aes(x=num_exclamation_mark, y=count/sum(count))) +
-  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "two star")+xlim(0,125)+ylim(0,0.5)
+  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "two star")+xlim(0,125)+ylim(0,0.5)+ylab("Count")
 q3 = ggplot(three, aes(x=num_exclamation_mark, y=count/sum(count))) +
-  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "three star")+xlim(0,125)+ylim(0,0.5)
+  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "three star")+xlim(0,125)+ylim(0,0.5)+ylab("Count")
 q4 = ggplot(four, aes(x=num_exclamation_mark, y=count/sum(count))) +
-  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "four star")+xlim(0,125)+ylim(0,0.5)
+  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "four star")+xlim(0,125)+ylim(0,0.5)+ylab("Count")
 q5 = ggplot(five, aes(x=num_exclamation_mark, y=count/sum(count))) +
-  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "five star")+xlim(0,125)+ylim(0,0.5)
+  geom_bar(stat="identity", fill="lightblue", colour="black")+ labs(title = "five star")+xlim(0,125)+ylim(0,0.5)+ylab("Count")
 
 
-multiplot(q1,q2,q3,q4,q5,cols = 2)
+multiplot(q1,q2,q3,q4,q5,cols = 1)
 
 
 
 
-# 大小写
+
+# Upperwords
 
 upperwords <- read_csv("C:/Users/Wen/Desktop/STAT 628/module2/plot/num_upper_words.csv")
 one <- upperwords%>%filter(stars == 1)%>% 
@@ -189,7 +189,6 @@ multiplot(q1,q2,q3,q4,q5,cols = 2)
 
 ##  certain food trend 
 
-#所有的低星，高星评论名词都比较少  比例约为13554  k-square?
 # Special distrbution
 
 foodcount <- read_csv("C:/Users/Wen/Desktop/STAT 628/module2/plot/foodcount.csv")

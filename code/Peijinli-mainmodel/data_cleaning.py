@@ -40,6 +40,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 
 
 ###########function to extract word stem ####################################################
+
 ps = PorterStemmer()
 
 ########################################set up stopwords####################################
@@ -122,7 +123,7 @@ def getsp_category(catlist):
 ##########################################  read data  ##################################################
 #path = 'C:\\Users\\Peiji\\Desktop\\spring2018\\STAT628\\hw2'
 #os.chdir(path)
-from sklearn.cross_validation import train_test_split
+from sklearn.cross_validation import train_test_split  
 
 ###read data,split in train test
 file = 'train_data.csv'
@@ -130,9 +131,6 @@ data = pd.read_csv(file,sep=",", error_bad_lines=False, keep_default_na=False, n
 restaurantsDF = subset_givenlength(data,0,10000,15000)
 restaurantsDF.index = range(restaurantsDF.shape[0])
 restaurantsDF.text= process_reviews(restaurantsDF.text)
-
-########################################## new variable! text length######################
-restaurantsDF.textlen = pd.Series([len(i) for i in restaurantsDF.text])
 
 ###########################################   TF-IDF   ######################################
 tfidf_vectorizer = TfidfVectorizer()
