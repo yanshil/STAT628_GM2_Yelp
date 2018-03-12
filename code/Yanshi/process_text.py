@@ -16,7 +16,7 @@ def decontracted(phrase):
     phrase = re.sub(r"won't", "will not", phrase)
     phrase = re.sub(r"can\'t", "can not", phrase)
     phrase = re.sub(r"shan't", "refuse to", phrase)
-    phrase = re.sub(r"shan", "happy to", phrase)
+    # phrase = re.sub(r"shan", "happy to", phrase)
     phrase = re.sub(r":\(", "bad", phrase)
     phrase = re.sub(r":\)", "good", phrase)
     # general
