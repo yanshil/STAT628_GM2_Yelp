@@ -6,7 +6,7 @@ This repo is for the second course project of STAT 628 (Spring 2018, University 
 
 ## Content
 
-* ./code/`: All related code for analysis with separate folders created by code contributors. Please see the separate README in each folder for details. 
+* `./code/`: All related code for analysis with separate folders created by code contributors. Please see the separate README in each folder for details. 
     * Peijinli-mainmodel: Codes for LDA, Naive Bayesian, LSTM and Final Linear model
     * Yanshi: Codes for Random Forest, Decision Tree
     * Wen: Codes for Data Visualization
